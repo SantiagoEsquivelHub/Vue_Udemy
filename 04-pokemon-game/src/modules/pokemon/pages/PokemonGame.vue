@@ -1,15 +1,24 @@
 <template>
   <section
-    v-if="isLoading || randomPokemon === null"
+    v-if="isLoading || randomPokemon.id === null"
     class="flex flex-col justify-center items-center w-screen h-screen"
   >
-    <h1 class="text-3xl">Wait please...</h1>
-    <h3 class="animate-pulse">Loading Pokemons</h3>
+    <h1 class="text-3xl">Espere por favor</h1>
+    <h3 class="animate-pulse">Cargando Pokémons</h3>
   </section>
 
   <section v-else class="flex flex-col justify-center items-center w-screen h-screen">
-    <h1 class="m-5">Who is this Pokemon?</h1>
-    <h3 class="capitalize">{{ gameStatus }}</h3>
+    <h1 class="m-5">¿Quién es este Pokémon?</h1>
+
+    <div class="h-20">
+      <button
+        v-if="gameStatus !== GameStatus.Playing"
+        @click="getNextRound(4)"
+        class="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-700 transition-all"
+      >
+        ¿Jugar de nuevo?
+      </button>
+    </div>
 
     <!-- Pokemon Picture -->
     <PokemonPicture
@@ -20,8 +29,9 @@
     <!-- Pokemon Options -->
     <PokemonOptions
       :options="options"
-      @selected-option="onSelectedOption"
-      :block-selection="blockSelection"
+      :block-selection="gameStatus !== GameStatus.Playing"
+      :correct-answer="randomPokemon.id"
+      @selected-option="checkAnswer"
     />
   </section>
 </template>
@@ -33,15 +43,11 @@ import { usePokemonGame } from '../composables/usePokemonGame';
 import { GameStatus } from '../interfaces';
 
 const {
-  isLoading,
-  pokemonOptions: options,
   randomPokemon,
-  blockSelection,
+  isLoading,
   gameStatus,
+  pokemonOptions: options,
   checkAnswer,
+  getNextRound,
 } = usePokemonGame();
-
-const onSelectedOption = (value: number) => {
-  checkAnswer(value);
-};
 </script>
